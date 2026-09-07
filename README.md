@@ -93,10 +93,9 @@ This produces a table similar to:
 | time | process | node       | event   |
 | ---: | ------: | ---------- | ------- |
 |    1 |       0 | Start      | start   |
-|    4 |       0 | Activity A | end     |
-|    5 |       0 | Activity B | start   |
-|    8 |       0 | Activity B | failure |
-|   12 |       0 | Activity B | end     |
+|    5 |       0 | Activity A | start   |
+|    8 |       0 | Activity A | failure |
+|   12 |       0 | Activity A | end     |
 
 Some events contain additional information. For example, an `end` event records the waiting time and number of failures associated with that node. These are automatically included as additional columns when converting the log to a DataFrame.
 
@@ -132,10 +131,8 @@ If these parameters are not specified, default values are used.
 
 ### BPMN Layout Requirements
 The BPMN diagram requires a starting and ending node. This is so the simulation knows where to start and end a process.
-The starting and ending node are automatically made to take 0 time and have infinite* capacity
+The starting and ending node are automatically made to take 0 time and have infinite* capacity.
 
-Furthermore, the BPMN diagram must NOT have a possiblity of a process never reaching the ending node.
-For example, if node A goes to B and C, and B goes to the end node, then A may not be an `XOR` node.
 
 ## Roadmap
 

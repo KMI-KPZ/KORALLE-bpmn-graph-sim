@@ -13,3 +13,4 @@ class Process:
 
         self.finished = False
         self.time_waiting = 0
+        self.possibly_stuck = False

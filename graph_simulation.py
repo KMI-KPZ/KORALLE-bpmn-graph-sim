@@ -1,5 +1,3 @@
-import time
-
 import bpmn_parser
 import process
 from copy import deepcopy
@@ -86,7 +84,9 @@ class Simulation():
 
                             self.results.node_times_spent_waiting[node.id] += self.time_step_length
                 else:
+                    print(process.time_left_on_nodes)
                     time_left -= self.time_step_length
+                    print(process.time_left_on_nodes)
 
             for node in finished:
                 process.current_running_nodes.remove(node)
@@ -96,13 +96,32 @@ class Simulation():
 
             process.current_running_nodes.extend(nodes_added)
 
+    def list_nodes_and_ids(self):
+        max_len = max([len(node.name) for node in self.graph.nodes.values()]) + 1
+        for nodeid in self.graph.nodes:
+            node_name = self.graph.nodes[nodeid].name
+            print(node_name + " "*(max_len - len(node_name)) + "| " + nodeid)
+
+    def iterate_task_time(self, node_id, min_time, max_time, step):
+        original_time = self.graph.nodes[node_id].sample_time
+        time_to_try = min_time
+        results_dict = {}
+        for i in range(int((max_time - min_time) // step + 1)):
+            self.graph.nodes[node_id].sample_time = time_to_try
+            results_dict[time_to_try] = self.simulate()
+            time_to_try += step
+
+        # reset:
+        self.graph.nodes[node_id].sample_time = original_time
+        return results_dict
+
     def simulate(self, visualise=False):
         if self.graph.start == None:
             raise Exception("No starting node was found")
         if self.graph.end == None:
             raise Exception("No end node was found")
 
-        self.results.reset()
+        self.results = Results(self.graph)
         self.graph.reset_time_lefts() # randomise node.given_time
         self.reset_simulation()
 
@@ -117,9 +136,14 @@ class Simulation():
             # check if all nodes are at the end
             self._step_simulation(time=time_step)
 
-            if all(process.current_running_nodes == [self.graph.end] for process in self.processes):
+            # break if all running nodes have no outgoing!!
+            if all(not node.outgoing for process in self.processes for node in process.current_running_nodes):
+                for process in self.processes:
+                    if process.current_running_nodes == [self.graph.end]:
+                        process.possibly_stuck = False
+                    else:
+                        process.possibly_stuck = True
                 break
-
 
             time_step += self.time_step_length
 
@@ -140,6 +164,13 @@ class Results():
 
     def reset(self):
         self.__init__(self.graph)
+
+    def processes_summary(self):
+        output = {}
+        for process in self.processes_ran:
+            output[process.process_id] = {"Start time": process.start_time, "End time": process.end_time}
+
+        return output
 
     def find_bottlenecks(self):
         # We will score the bottleneck of a node by
