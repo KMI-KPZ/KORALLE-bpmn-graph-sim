@@ -2,7 +2,7 @@ import time
 import pandas as pd
 
 import graph_simulation as gsim
-my_sim = gsim.Simulation("complexdiagram.bpmn", n=1, t=0.2, time_step_length=0.1)
+my_sim = gsim.Simulation("complexdiagram.bpmn", n=100, t=0.2, time_step_length=0.1)
 
 my_sim.list_nodes_and_ids()
 
@@ -15,6 +15,5 @@ for test in results_dict:
         print(line + ":", summary[line])
 
     print("\n" * 2)
-
-print(my_sim.simulate().summary())
+print(my_sim.list_nodes_and_ids())
 

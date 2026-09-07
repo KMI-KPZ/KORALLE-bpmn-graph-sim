@@ -127,7 +127,7 @@ class Simulation():
 
         self.results = Results(self.graph)
 
-        self.graph.reset_time_lefts(randomise=False) # randomise node.given_time
+        self.graph.reset_time_lefts() # randomise node.given_time
 
         # create fresh processes
         self.reset_simulation()
@@ -142,14 +142,14 @@ class Simulation():
         while True:
             # check if all nodes are at the end
             self._step_simulation(time=time_step)
-
             # Every process is either:
             #   - at the end node
             #   - or stuck somewhere with no outgoing edges
             if all(
-                not node.outgoing
+                node.id == self.graph.end.id
+                or (remaining_time <= 0 and len(node.outgoing) == 0)
                 for process in self.processes
-                for node in process.current_running_nodes
+                for node, remaining_time in process.current_running_nodes.items()
             ):
                 for process in self.processes:
                     if (
