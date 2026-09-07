@@ -1,3 +1,40 @@
+#
+Test files:
+```
+test1.bpmn
+
+start -> task A -> end
+
+test2.bpmn
+
+start -> task A -> task B -> end
+
+test3.bpmn
+
+              /-> A -\
+start -> Node1        > end
+              \-> B -/
+
+test4.bpmn
+
+              /-> A -\
+start -> XORnode      > end
+              \-> B -/
+
+
+test5.bpmn
+
+     /-> task A -> end
+start
+     \-> task B
+
+test6.bpmn
+
+start -> A --------------> B -> end
+        (n=100)          (capacity=1)
+        (capacity=100)
+
+```
 # KORALLE BPMN Graph Simulation
 
 A simple Python-based simulator for processes modeled as **BPMN graphs**.
