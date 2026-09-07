@@ -45,6 +45,7 @@ class Graph:
             else:
                 node.given_time = node.sample_time
 
+
     def order(self):
         return len(self.nodes)
 

@@ -52,7 +52,7 @@ class Simulation():
                 elif time_left <= 0:
                     # does it fail at the end?
                     if random.random() < node.fail_chance:
-                        time_left = node.given_time
+                        process.current_running_nodes[node] = deepcopy(node.given_time)
                         self.results.fails[node.id] += 1
                         self.results.event_log.append(
                                 {"time": time, "process": process.process_id, "node": node.name, "event": "failure"})
@@ -98,7 +98,7 @@ class Simulation():
 
             # add new nodes
             for node in nodes_added:
-                process.current_running_nodes[node] = node.given_time
+                process.current_running_nodes[node] = deepcopy(node.given_time)
 
     def list_nodes_and_ids(self):
         max_len = max([len(node.name) for node in self.graph.nodes.values()]) + 1
@@ -107,7 +107,7 @@ class Simulation():
             print(node_name + " "*(max_len - len(node_name)) + "| " + nodeid)
 
     def iterate_task_time(self, node_id, min_time, max_time, step):
-        original_time = self.graph.nodes[node_id].sample_time
+        original_time = deepcopy(self.graph.nodes[node_id].sample_time)
         time_to_try = min_time
         results_dict = {}
         for i in range(int((max_time - min_time) // step + 1)):
