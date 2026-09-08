@@ -1,158 +1,49 @@
-#
-Test files:
-```
-test1.bpmn
-
-start -> task A -> end
-
-test2.bpmn
-
-start -> task A -> task B -> end
-
-test3.bpmn
-
-              /-> A -\
-start -> Node1        > end
-              \-> B -/
-
-test4.bpmn
-
-              /-> A -\
-start -> XORnode      > end
-              \-> B -/
-
-
-test5.bpmn
-
-     /-> task A -> end
-start
-     \-> task B
-
-test6.bpmn
-
-start -> A --------------> B -> end
-        (n=100)          (capacity=1)
-        (capacity=100)
-
-```
-# KORALLE BPMN Graph Simulation
+# BPMN Simulation using Directed Graphs
 
 A simple Python-based simulator for processes modeled as **BPMN graphs**.
 
 The project reads a BPMN 2.0 file, converts the process into a graph structure, and simulates the flow of work through the process.
 
-## Features
-
-* Parse `.bpmn` files
-* Convert BPMN processes into a graph
-* Simulate process execution
-* Configure task processing time
-* Support processing-time variance
-* Model task capacity
-* Model task failure probability
-* Export simulation results to CSV
-* Support gateway types such as `AND`, `OR`, and `XOR`
-
-## Project Structure
-
+## Repository Structure
 ```text
-KORALLE-bpmn-graph-sim/
-├── bpmn_parser.py       # Reads and parses BPMN files
-├── graph_structure.py   # Graph and node data structures
-├── graph_simulation.py  # Process simulation logic
-├── process.py           # Process-related functionality
-├── main.py              # Main entry point
-├── complexdiagram.bpmn  # Example BPMN process
-└── out.csv              # Example simulation output
+.
+├── bpmn_parser.py
+├── complexdiagram.bpmn
+├── graph_simulation.py
+├── graph_structure.py
+├── main.py
+├── process.py
+├── README.md
+├── testing.py
+└── tests
+    ├── test1.bpmn
+    └── ...
 ```
 
 ## Usage
 
-Clone the repository:
+Clone the repository with
 
 ```bash
 git clone https://github.com/toewl-devv/KORALLE-bpmn-graph-sim.git
 ```
 
-Run the main program:
+Run the example main program:
 
 ```bash
-python main.py
+python3 main.py
 ```
-
-An example BPMN process is provided in: `complexdiagram.bpmn`
-
-## Results and Event Logs
-
-After running a simulation, `simulate()` returns a `Results` object containing information about the simulation, including failures, waiting times, bottlenecks, and the event log.
-
-```python
-from graph_simulation import Simulation
-
-simulation = Simulation("complexdiagram.bpmn", n=10)
-
-results = simulation.simulate()
-
-print(results.summary())
-```
-
-The `Results` object can also be used directly to inspect individual metrics:
-
-```python
-print(results.time_steps_taken)
-print(results.fails)
-print(results.node_times_spent_waiting)
-print(results.edge_times_spent_waiting)
-
-print(results.find_bottlenecks())
-```
-
-### Event Log
-
-Every simulation produces an event log stored in `results.event_log`. Each event is represented as a dictionary containing information such as the simulation time, process, node, and event type.
-
-```python
-print(results.event_log)
-```
-
-For analysis with pandas, the event log can be converted directly into a DataFrame:
-
-```python
-import pandas as pd
-
-event_log = pd.DataFrame(results.event_log)
-
-print(event_log)
-```
-
-This produces a table similar to:
-
-| time | process | node       | event   |
-| ---: | ------: | ---------- | ------- |
-|    1 |       0 | Start      | start   |
-|    5 |       0 | Activity A | start   |
-|    8 |       0 | Activity A | failure |
-|   12 |       0 | Activity A | end     |
-
-Some events contain additional information. For example, an `end` event records the waiting time and number of failures associated with that node. These are automatically included as additional columns when converting the log to a DataFrame.
-
-The resulting DataFrame can then be used with the usual pandas functionality for filtering, grouping, plotting, and further analysis.
+or read on to find out more about how to use this simulator (an example diagram
+is provided in `complexdiagram.bpmn`.
 
 ## BPMN Requirements
-### BPMN Task Parameters
+### Task Naming
 
-Task parameters can be stored in the BPMN element's `name` attribute using the following format:
-
-```text
-name;time;variance;capacity;fail_chance;gateway_type
+When creating a BPMN process diagram, a name can be given to each process.
+The name must have a very specific format:
 ```
-
-For example:
-
-```text
-Process Order;5;1;2;0.05;AND
+name; time; variance; capacity; fail_chance; gateway_type
 ```
-
 Where:
 
 | Parameter      | Description                                          |
@@ -164,18 +55,155 @@ Where:
 | `fail_chance`  | Probability of task failure, between `0` and `1`     |
 | `gateway_type` | `AND`, `OR`, or `XOR`                                |
 
-If these parameters are not specified, default values are used.
+If these parameters are not specified, somesome  default values are used.
 
-### BPMN Layout Requirements
-The BPMN diagram requires a starting and ending node. This is so the simulation knows where to start and end a process.
-The starting and ending node are automatically made to take 0 time and have infinite* capacity.
+### Layout
+The BPMN diagram must have "start event" and "end event" nodes. This is so that the simulation knows
+where to begin and end the simulation.
 
+A name musn't be given to these nodes, as they will automatically be made to take 0 time units
+and have (practically) infinite capacity.
 
-## Roadmap
+## Detailed Usage
 
-Planned improvements include:
+To begin, the `main` file must import the simulation library:
+```python
+import graph_simulation as gsim
+```
 
-* Extend BPMN element support
-* Improve process visualization
-* Improve the simulation clock
+From there, we can create our first, basic simulation using
+the `Simulation` class:
+
+```python
+my_sim = gsim.Simulation("complexdiagram.bpmn")
+```
+
+To run the simulation and store the given `Results` object, we use
+
+```python
+results = my_sim.simulate()
+```
+
+### The Results Object
+
+Every time a simulation is run, a `Results` object is created 
+with several attributes which can be used to analyze the simulation.
+
+A summary of the results is given by:
+```python
+print(results.summary())
+```
+
+An extensive list of all of the capabilities of the `Result` class is below.
+
+#### Total Simulation Time
+The total time taken to finish the simulation is given by
+```python
+results.time_steps_taken
+```
+#### Time Wasted
+The total time wasted can be found in different ways. First is 
+node-wise wasted time, which is incremented whenever a process *could*
+move from one node to the next but is blocked since the next node(s) is
+at full capacity.
+```python
+print(results.node_times_spent_waiting)
+```
+
+The second is edge-wise wasted time, which is incremented when a process specifically cannot move
+along that edge because that edge is blocked due to capacity.
+```python
+print(results.edge_times_spent_waiting)
+```
+
+#### Failures
+Sometimes, nodes can fail. We can see which nodes failed how many times using
+```python
+print(results.fails)
+```
+
+#### Event Log
+The event log is a list of every event which happened in the simulation.
+Each entry in the log has a timestamp, a process ID, and the specific event which occured.
+
+> [!NOTE] The `pandas` library is very useful for viewing the event log (as well all previous attributes).
+```python
+import pandas as pd
+print(pd.DataFrame(results.event_log).to_string())
+```
+
+#### Processes
+We can access a list of the `Process` objects which were ran in the simulation using
+```python
+print(results.processes_ran)
+```
+However, this isn't very useful. Each process object has a few attributes which may be useful:
+```
+start_time
+end_time
+possibly_stuck
+```
+Otherwise, we may run
+```python
+print(results.processes_summary())
+```
+
+to see a summary of what each process did. This returns a dictionary of dictionaries.
+
+#### Bottlenecks
+We can use
+```python
+results.find_bottlenecks()
+```
+to return a list sorted from highest to lowest in order of each nodes "bottleneck score".
+
+### Simulation Options
+When creating a `Simulation` object, there are several customisable parameters:
+```python
+my_sim = gsim.Simulation("complexdiagram.bpmn", n=1, t=0.0, timescale=1.0, time_step_length=1.0)
+```
+Where
+| Parameter          | Meaning                                                          | Default |
+|--------------------|------------------------------------------------------------------|---------|
+| `n`                | Number of processes to run in the simulation                     | 1       |
+| `t`                | Stagger time between beginning each process                      | 0.0     |
+| `timescale`        | The speed multiplier of the simulation (should it be visualised) | 1.0     |
+| `time_step_length` | The "minimum time unit" for the simulation                       | 1.0     |
+
+When running the simulation using `my_sim.simulate()`, one can optionally use
+```python
+my_sim.simulate(visualise=True)
+```
+which will run a visualisation of the simulation.
+> [!NOTE] This isn't actually implemented yet.
+
+### Iterating Values for a Simulation
+Suppose we want to test out if making a particular node faster will help the overall process become faster.
+First we require the node ID. This can be found by running
+```python
+my_sim.list_nodes_and_ids()
+```
+which will print a table of each node name and its respective ID.
+
+When we have found the ID we would like to iterate, we can use
+```python
+results_dictionary = my_sim.iterate_task_time(node_id, 0.0, 10.0, 2.5)
+```
+to run a simulation where that node takes 0, 2.5, 5, 7.5, and 10 time units.
+
+The results from each simulation is kept in a dictionary of `Results` objects, which is indexed by the task time, e.g.
+```text
+{
+    0.0: Results
+    2.5: Results
+    ...
+}
+```
+
+# Contributing
+* Use python >= 3
+* Follow current styling and python standards. I.e. snake_case, docstring formatting, etc.
+
+# License
+?
 
