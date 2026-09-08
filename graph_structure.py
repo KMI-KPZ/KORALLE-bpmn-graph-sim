@@ -71,8 +71,6 @@ class Graph:
     Methods:
         reset_time_lefts():
             Resets the given_time for every node in the graph
-        order():
-            Returns the order of the graph i.e. |V| = number of nodes
         add_node(node):
             Adds a Node object to the nodes dictionary
         add_edge(a, b):
@@ -113,11 +111,6 @@ class Graph:
                         
             else:
                 node.given_time = node.sample_time
-
-
-    def order(self):
-        '''Returns the order of the graph, |V| where Graph = (V,E)'''
-        return len(self.nodes)
 
     def add_node(self, node: Node):
         '''
