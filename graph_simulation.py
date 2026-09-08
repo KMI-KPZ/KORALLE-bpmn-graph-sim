@@ -332,10 +332,13 @@ class Results():
             Resets the results object for a fresh simulation, should that be required.
 
         processes_summary():
+            Returns a dictionary of summaries of data for each of the n processes ran
 
         summary():
+            Returns a short dictionary with vital information about the simulation
 
         find_bottlenecks():
+            Returns a sorted list of nodes and and their 'bottleneck score'
     '''
     def __init__(self, graph):
         '''
