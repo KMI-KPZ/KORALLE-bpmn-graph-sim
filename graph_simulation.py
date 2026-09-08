@@ -178,14 +178,12 @@ class Simulation():
             for node in finished:
                 del process.current_running_nodes[node]
 
-                # Start outgoing nodes
-                for out in node.outgoing:
-                    self.results.event_log.append(
-                            {"time": time, "process": process.process_id, "node": out.name, "event": "start"})
-
-            # add new nodes
             for node in nodes_added:
                 process.current_running_nodes[node] = deepcopy(node.given_time)
+                self.results.event_log.append(
+                            {"time": time, "process": process.process_id, "node": node.name, "event": "start"})
+
+
 
     def list_nodes_and_ids(self):
         '''
