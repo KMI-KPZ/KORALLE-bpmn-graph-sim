@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np # We need numpy for the normal random variables
 
 class Node:
     def __init__(self, 
