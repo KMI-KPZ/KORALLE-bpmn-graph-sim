@@ -102,7 +102,10 @@ class BpmnFile:
                     gatetype = str(gatetype)
                 except ValueError:
                     raise ValueError(f'Invalid task format: "{node_data}". Expected "name;time;variance;capacity;failchance;gatetype"')
+
             else: # a node has no space in the BPMN for name, it will default to these values
+                # TODO add some functionality for other types of BPMN TASK TYPES. Right now, there is nothing
+                # to control GateWay objects etc, they will be treated as a task with no name.
                 name = child.tag.split("}")[-1]
                 time = 0.0
                 variance = 0.0
@@ -193,5 +196,4 @@ def _validate_values(time, variance, capacity, fail_chance, gatetype):
     # gatetype must be either AND, OR, or XOR
     if gatetype.lower() not in ["and", "or", "xor"]:
         raise ValueError("BPMN Node gateway type must be either 'and', 'or', or 'xor'")
-
 
