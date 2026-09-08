@@ -7,15 +7,15 @@ The project reads a BPMN 2.0 file, converts the process into a graph structure, 
 ## Repository Structure
 ```text
 .
-├── bpmn_parser.py
-├── complexdiagram.bpmn
-├── graph_simulation.py
-├── graph_structure.py
-├── main.py
-├── process.py
-├── README.md
-├── testing.py
-└── tests
+├── bpmn_parser.py          # Turns a BPMN file into a Graph object
+├── complexdiagram.bpmn     # Example BPMN file for testing
+├── graph_simulation.py     # The file in charge of handling simulations
+├── graph_structure.py      # Defines the Graph and Node classes
+├── main.py                 # Example usage of graph_simulation
+├── process.py              # Defines the Process class
+├── README.md               # Do as the name say ;)
+├── testing.py              # Running tests in tests/
+└── tests/                  # Folder containing test BPMN files
     ├── test1.bpmn
     └── ...
 ```

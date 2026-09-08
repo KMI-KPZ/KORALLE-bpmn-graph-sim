@@ -1,15 +1,10 @@
-import time
 import pandas as pd
 
-import testing
 import graph_simulation as gsim
 
-testing.test1()
-testing.test2()
-testing.test3()
-testing.test4()
-testing.test5()
-testing.test6()
+my_sim = gsim.Simulation("complexdiagram.bpmn", n=5, t=1, time_step_length=0.5)
+results = my_sim.simulate()
+print(pd.DataFrame(results.event_log).to_string())
 
 """
 # An example of the iterate_task_time function
