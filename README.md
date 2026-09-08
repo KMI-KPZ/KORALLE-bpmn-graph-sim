@@ -4,6 +4,27 @@ A simple Python-based simulator for processes modeled as **BPMN graphs**.
 
 The project reads a BPMN 2.0 file, converts the process into a graph structure, and simulates the flow of work through the process.
 
+## Table of Contents
+
+- [BPMN Simulation using Directed Graphs](#bpmn-simulation-using-directed-graphs)
+- [Repository Structure](#repository-structure)
+- [Usage](#usage)
+- [BPMN Requirements](#bpmn-requirements)
+  - [Task Naming](#task-naming)
+  - [Layout](#layout)
+- [Detailed Usage](#detailed-usage)
+  - [The Results Object](#the-results-object)
+    - [Total Simulation Time](#total-simulation-time)
+    - [Time Wasted](#time-wasted)
+    - [Failures](#failures)
+    - [Event Log](#event-log)
+    - [Processes](#processes)
+    - [Bottlenecks](#bottlenecks)
+- [Simulation Options](#simulation-options)
+- [Iterating Values for a Simulation](#iterating-values-for-a-simulation)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Repository Structure
 ```text
 .
