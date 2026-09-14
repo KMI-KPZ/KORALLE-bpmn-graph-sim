@@ -25,16 +25,39 @@ The project reads a BPMN 2.0 file, converts the process into a graph structure, 
 - [Contributing](#contributing)
 - [License](#license)
 
+
+## Suggested Improvements
+Currently, the simulation steps through every time step, even if nothing happens. Then, for every timestep,
+it loops through every process, and in every process it loops through every currently active node.
+
+This can likely be improved, by using an event-driven simulation rather than time-stepped simulation.
+
+This flaw is definitely visible when, for example, setting `n=1000`, where the program can take ages to
+generate a results object. I'm sure that other than changing the simulation type there are optimisations to make.
+
+I'm not sure about pythons limitations, and whether using a huge list of dictionaries is inefficient when
+entry numbers are very high, but perhaps using a different method, such as opening a .csv file and writing
+the next line to it would be quicker. Still, however, the majority of the simulation is spent looping through
+each process without appending anything to the event log or other result attributes.
+
+Due to the amount of checks required, the `_step_simulation()` function can go as deep as 3 or 4 `for` loops.
+Almost certaintly, there is a cleaner way to do this.
+
+See:
+* https://staff.universitaspahlawan.ac.id/web/upload/materials/958-materials.pdf
+* https://www.researchgate.net/publication/322524759_Design_of_an_Extensible_BPMN_Process_Simulator
+
+
 ## Repository Structure
 ```text
 .
 ├── bpmn_parser.py          # Turns a BPMN file into a Graph object
-├── complexdiagram.bpmn     # Example BPMN file for testing
 ├── graph_simulation.py     # The file in charge of handling simulations
 ├── graph_structure.py      # Defines the Graph and Node classes
-├── main.py                 # Example usage of graph_simulation
 ├── process.py              # Defines the Process class
-├── README.md               # Do as the name say ;)
+├── main.py                 # Example usage of graph_simulation
+├── README.md               # Do as the name says ;)
+├── complexdiagram.bpmn     # Example BPMN file for testing
 ├── testing.py              # Running tests in tests/
 └── tests/                  # Folder containing test BPMN files
     ├── test1.bpmn
